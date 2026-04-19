@@ -7,9 +7,11 @@ export async function middleware(request: NextRequest) {
   })
 
   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
-  const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY
+  // MAKE SURE THIS MATCHES VERCEL EXACTLY
+  const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY 
 
   if (!supabaseUrl || !supabaseKey) {
+    console.error("Missing Supabase Env Variables")
     return supabaseResponse
   }
 
