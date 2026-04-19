@@ -1,51 +1,56 @@
-'use client'
+import { createClient } from '@/lib/supabase/server'
+import { HomeClient } from './home-client'
+import { normalizeMovieRow, type ShowtimeRow } from '@/lib/movies'
 
-import { useState } from 'react'
-import { Header } from '@/components/header'
-import { HybridHeroCarousel } from '@/components/hybrid-hero-carousel'
-import { NowPlaying } from '@/components/now-playing'
-import { ComingSoon } from '@/components/coming-soon'
-import { PricingSection } from '@/components/pricing-section'
-import { WhatsAppShare } from '@/components/whatsapp-share'
-import { Footer } from '@/components/footer'
-import { BookingModal } from '@/components/booking-modal'
+export const revalidate = 0
 
-export default function HomePage() {
-  const [bookingMovieId, setBookingMovieId] = useState<string | null>(null)
+export default async function HomePage() {
+  const supabase = await createClient()
 
-  const handleBookTickets = (movieId: string) => {
-    setBookingMovieId(movieId)
+  const { data: nowRows, error: nowError } = await supabase
+    .from('movies')
+    .select('*')
+    .eq('is_now_playing', true)
+    .order('title', { ascending: true })
+
+  const { data: soonRows, error: soonError } = await supabase
+    .from('movies')
+    .select('*')
+    .eq('is_coming_soon', true)
+    .order('title', { ascending: true })
+
+  const nowPlaying = (nowRows ?? []).map((r) => normalizeMovieRow(r as Record<string, unknown>))
+  const comingSoon = (soonRows ?? []).map((r) => normalizeMovieRow(r as Record<string, unknown>))
+
+  const movieIds = nowPlaying.map((m) => m.id)
+
+  let showtimes: ShowtimeRow[] = []
+  if (movieIds.length > 0) {
+    const { data: stRows, error: stError } = await supabase
+      .from('showtimes')
+      .select('id,movie_id,start_time,is_3d')
+      .in('movie_id', movieIds)
+      .order('start_time', { ascending: true })
+
+    if (stError) {
+      console.error('showtimes fetch:', stError.message)
+    } else {
+      showtimes = (stRows ?? []) as ShowtimeRow[]
+    }
+  }
+
+  if (nowError) {
+    console.error('now playing fetch:', nowError.message)
+  }
+  if (soonError) {
+    console.error('coming soon fetch:', soonError.message)
   }
 
   return (
-    <main className="min-h-screen bg-[#0a0a0a]">
-      {/* Sticky Header */}
-      <Header />
-      
-      {/* Hybrid Hero Carousel */}
-      <HybridHeroCarousel onBookTickets={handleBookTickets} />
-      
-      {/* Now Playing Section */}
-      <NowPlaying onBookTickets={handleBookTickets} />
-      
-      {/* Coming Soon Section */}
-      <ComingSoon />
-      
-      {/* Pricing Section */}
-      <PricingSection />
-      
-      {/* Footer */}
-      <Footer />
-      
-      {/* Floating WhatsApp Share */}
-      <WhatsAppShare />
-
-      {/* Booking Modal */}
-      <BookingModal 
-        isOpen={bookingMovieId !== null}
-        onClose={() => setBookingMovieId(null)}
-        movieId={bookingMovieId}
-      />
-    </main>
+    <HomeClient
+      nowPlaying={nowError ? [] : nowPlaying}
+      comingSoon={soonError ? [] : comingSoon}
+      showtimes={showtimes}
+    />
   )
 }

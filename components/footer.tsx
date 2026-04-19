@@ -81,21 +81,21 @@ export function Footer() {
             </h4>
             <div className="space-y-3">
               <a 
-                href="tel:+14734444567" 
+                href="tel:+14734446688" 
                 className="block text-sm text-white/60 transition-colors hover:text-white"
               >
-                +1 (473) 444-4567
+                +1 (473) 444-6688
               </a>
               <div className="flex gap-3">
                 <a
-                  href="#"
+                  href="https://www.instagram.com/moviepalacegrenada/"
                   className="flex h-10 w-10 items-center justify-center rounded-lg bg-white/10 text-white/60 transition-all hover:bg-[#E50914] hover:text-white"
                   aria-label="Instagram"
                 >
                   <Instagram className="h-5 w-5" />
                 </a>
                 <a
-                  href="#"
+                  href="https://www.facebook.com/p/Movie-Palace-Grenada-100063665376008/"
                   className="flex h-10 w-10 items-center justify-center rounded-lg bg-white/10 text-white/60 transition-all hover:bg-[#E50914] hover:text-white"
                   aria-label="Facebook"
                 >
@@ -114,7 +114,7 @@ export function Footer() {
           transition={{ delay: 0.4 }}
           className="mt-10 flex flex-col items-center justify-between gap-4 border-t border-white/10 pt-8 text-sm text-white/40 md:flex-row"
         >
-          <p>© 2026 Movie Palace Grenada. All rights reserved.</p>
+          <p>© 2026 Excel Plaza. All rights reserved.</p>
           <p>Made with ❤️ in Grenada</p>
         </motion.div>
       </div>

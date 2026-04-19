@@ -1,5 +1,6 @@
 import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
+import { normalizeMovieRow } from '@/lib/movies'
 import { AdminDashboard } from '@/components/admin/admin-dashboard'
 
 export const dynamic = 'force-dynamic'
@@ -41,11 +42,9 @@ export default async function AdminPage() {
     )
   }
 
-  const normalizedMovies = (movies ?? []).map((m) => ({
-    ...m,
-    is_now_playing: Boolean(m.is_now_playing),
-    is_coming_soon: Boolean(m.is_coming_soon),
-  }))
+  const normalizedMovies = (movies ?? []).map((m) =>
+    normalizeMovieRow(m as Record<string, unknown>)
+  )
 
   return (
     <AdminDashboard

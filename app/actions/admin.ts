@@ -3,17 +3,9 @@
 import { revalidatePath } from 'next/cache'
 import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
+import type { Movie } from '@/lib/movies'
 
-export type MovieRow = {
-  id: string
-  title: string | null
-  description: string | null
-  poster_url: string | null
-  trailer_url: string | null
-  is_now_playing: boolean
-  is_coming_soon: boolean
-  rating: string | null
-}
+export type MovieRow = Movie
 
 async function requireUser() {
   const supabase = await createClient()
