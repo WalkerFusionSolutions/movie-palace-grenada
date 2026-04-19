@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useCallback } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { Play, Ticket, ChevronLeft, ChevronRight } from 'lucide-react'
+import { Play, ChevronLeft, ChevronRight } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import type { Movie } from '@/lib/movies'
@@ -105,15 +105,6 @@ export function HeroCarousel({ movies }: HeroCarouselProps) {
             </p>
 
             <div className="flex flex-wrap gap-4">
-              <Button
-                size="lg"
-                className="glow-red bg-[#E50914] px-8 text-white hover:bg-[#E50914]/90"
-                onMouseEnter={() => setIsAutoPlaying(false)}
-                onMouseLeave={() => setIsAutoPlaying(true)}
-              >
-                <Ticket className="mr-2 h-5 w-5" />
-                Book Now
-              </Button>
               <Button
                 size="lg"
                 variant="outline"

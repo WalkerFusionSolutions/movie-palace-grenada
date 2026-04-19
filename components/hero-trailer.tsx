@@ -2,23 +2,43 @@
 
 import { useState } from 'react'
 import { motion } from 'framer-motion'
-import { Play, X, Ticket } from 'lucide-react'
+import { Play, X } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import type { Movie } from '@/lib/movies'
 
 interface HeroTrailerProps {
   featuredMovie: Movie | null
-  onBookTickets: (movieId: string) => void
 }
 
 function trailerSrc(url: string | null) {
   if (!url) return ''
-  const sep = url.includes('?') ? '&' : '?'
-  return `${url}${sep}autoplay=1&rel=0`
+  try {
+    const parsed = new URL(url)
+    const host = parsed.hostname.replace('www.', '')
+    const ytIdFromPath =
+      host === 'youtu.be' ? parsed.pathname.split('/').filter(Boolean)[0] : null
+    const ytIdFromQuery = parsed.searchParams.get('v')
+    const ytId = ytIdFromPath ?? ytIdFromQuery
+
+    if (host.includes('youtube.com') || host === 'youtu.be') {
+      if (!ytId && parsed.pathname.includes('/embed/')) {
+        parsed.searchParams.set('autoplay', '1')
+        parsed.searchParams.set('rel', '0')
+        return parsed.toString()
+      }
+      if (!ytId) return ''
+      return `https://www.youtube.com/embed/${ytId}?autoplay=1&rel=0`
+    }
+
+    parsed.searchParams.set('autoplay', '1')
+    return parsed.toString()
+  } catch {
+    return ''
+  }
 }
 
-export function HeroTrailer({ featuredMovie, onBookTickets }: HeroTrailerProps) {
+export function HeroTrailer({ featuredMovie }: HeroTrailerProps) {
   const [isTrailerPlaying, setIsTrailerPlaying] = useState(false)
 
   if (!featuredMovie) {
@@ -77,14 +97,6 @@ export function HeroTrailer({ featuredMovie, onBookTickets }: HeroTrailerProps) 
               </p>
 
               <div className="flex flex-wrap gap-4">
-                <Button
-                  size="lg"
-                  className="glow-red bg-[#E50914] px-8 text-white hover:bg-[#E50914]/90"
-                  onClick={() => onBookTickets(featuredMovie.id)}
-                >
-                  <Ticket className="mr-2 h-5 w-5" />
-                  Buy Tickets
-                </Button>
                 <Button
                   size="lg"
                   variant="outline"

@@ -52,6 +52,7 @@ export async function upsertMovie(input: {
   poster_url: string
   trailer_url: string
   rating: string
+  showtime_display: string
 }) {
   const auth = await requireUser()
   if (!auth) {
@@ -65,6 +66,7 @@ export async function upsertMovie(input: {
     poster_url: input.poster_url || null,
     trailer_url: input.trailer_url || null,
     rating: input.rating || null,
+    showtime_display: input.showtime_display || null,
   }
 
   if (input.id) {
@@ -91,45 +93,6 @@ export async function deleteMovie(movieId: string) {
   const { supabase } = auth
 
   const { error } = await supabase.from('movies').delete().eq('id', movieId)
-  if (error) {
-    return { error: error.message }
-  }
-  revalidatePublic()
-  return { success: true }
-}
-
-export async function addShowtime(input: {
-  movie_id: string
-  start_time: string
-  is_3d: boolean
-}) {
-  const auth = await requireUser()
-  if (!auth) {
-    return { error: 'Unauthorized' }
-  }
-  const { supabase } = auth
-
-  const { error } = await supabase.from('showtimes').insert({
-    movie_id: input.movie_id,
-    start_time: input.start_time,
-    is_3d: input.is_3d,
-  })
-
-  if (error) {
-    return { error: error.message }
-  }
-  revalidatePublic()
-  return { success: true }
-}
-
-export async function deleteShowtime(showtimeId: string) {
-  const auth = await requireUser()
-  if (!auth) {
-    return { error: 'Unauthorized' }
-  }
-  const { supabase } = auth
-
-  const { error } = await supabase.from('showtimes').delete().eq('id', showtimeId)
   if (error) {
     return { error: error.message }
   }

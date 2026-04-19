@@ -1,12 +1,10 @@
 'use client'
 
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import {
   ArrowLeft,
-  Calendar,
-  Clock,
   Film,
   Loader2,
   Plus,
@@ -47,28 +45,13 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from '@/components/ui/alert-dialog'
-import {
-  Collapsible,
-  CollapsibleContent,
-  CollapsibleTrigger,
-} from '@/components/ui/collapsible'
-import { Checkbox } from '@/components/ui/checkbox'
 import type { MovieRow } from '@/app/actions/admin'
 import {
-  addShowtime,
   deleteMovie,
-  deleteShowtime,
   signOut,
   toggleMovieFlag,
   upsertMovie,
 } from '@/app/actions/admin'
-
-export type ShowtimeRow = {
-  id: string
-  movie_id: string
-  start_time: string
-  is_3d: boolean
-}
 
 function getRatingColor(rating: string | null) {
   switch (rating) {
@@ -85,55 +68,17 @@ function getRatingColor(rating: string | null) {
   }
 }
 
-function formatShowtime(ts: string) {
-  try {
-    return new Date(ts).toLocaleString(undefined, {
-      weekday: 'short',
-      month: 'short',
-      day: 'numeric',
-      hour: 'numeric',
-      minute: '2-digit',
-    })
-  } catch {
-    return ts
-  }
-}
-
 type AdminDashboardProps = {
   initialMovies: MovieRow[]
-  initialShowtimes: ShowtimeRow[]
 }
 
-export function AdminDashboard({
-  initialMovies,
-  initialShowtimes,
-}: AdminDashboardProps) {
+export function AdminDashboard({ initialMovies }: AdminDashboardProps) {
   const router = useRouter()
   const [movies, setMovies] = useState(initialMovies)
-  const [showtimes, setShowtimes] = useState(initialShowtimes)
 
   useEffect(() => {
     setMovies(initialMovies)
   }, [initialMovies])
-
-  useEffect(() => {
-    setShowtimes(initialShowtimes)
-  }, [initialShowtimes])
-
-  const showtimesByMovie = useMemo(() => {
-    const map: Record<string, ShowtimeRow[]> = {}
-    for (const s of showtimes) {
-      map[s.movie_id] ??= []
-      map[s.movie_id].push(s)
-    }
-    for (const id of Object.keys(map)) {
-      map[id].sort(
-        (a, b) =>
-          new Date(a.start_time).getTime() - new Date(b.start_time).getTime()
-      )
-    }
-    return map
-  }, [showtimes])
 
   const [dialogOpen, setDialogOpen] = useState(false)
   const [editing, setEditing] = useState<MovieRow | null>(null)
@@ -154,6 +99,7 @@ export function AdminDashboard({
       poster_url: '',
       trailer_url: '',
       rating: 'PG',
+      showtime_display: '',
     })
     setDialogOpen(true)
   }
@@ -166,6 +112,7 @@ export function AdminDashboard({
       poster_url: movie.poster_url ?? '',
       trailer_url: movie.trailer_url ?? '',
       rating: movie.rating ?? 'PG',
+      showtime_display: movie.showtime_display ?? '',
     })
     setDialogOpen(true)
   }
@@ -183,6 +130,7 @@ export function AdminDashboard({
       poster_url: form.poster_url,
       trailer_url: form.trailer_url,
       rating: form.rating,
+      showtime_display: form.showtime_display,
     })
     setSaving(false)
     if ('error' in res && res.error) {
@@ -211,41 +159,6 @@ export function AdminDashboard({
       )
     )
     router.refresh()
-  }
-
-  async function handleDeleteShowtime(id: string) {
-    const res = await deleteShowtime(id)
-    if ('error' in res && res.error) {
-      toast.error(res.error)
-      return
-    }
-    toast.success('Showtime removed.')
-    setShowtimes((prev) => prev.filter((s) => s.id !== id))
-    router.refresh()
-  }
-
-  async function handleAddShowtime(
-    movieId: string,
-    localDatetime: string,
-    is3d: boolean
-  ): Promise<boolean> {
-    if (!localDatetime) {
-      toast.error('Pick a date and time.')
-      return false
-    }
-    const iso = new Date(localDatetime).toISOString()
-    const res = await addShowtime({
-      movie_id: movieId,
-      start_time: iso,
-      is_3d: is3d,
-    })
-    if ('error' in res && res.error) {
-      toast.error(res.error)
-      return false
-    }
-    toast.success('Showtime added.')
-    router.refresh()
-    return true
   }
 
   async function handleDeleteMovie(movieId: string) {
@@ -278,7 +191,7 @@ export function AdminDashboard({
                 Movie Palace <span className="text-[#E50914]">Grenada</span>
               </h1>
               <p className="text-sm text-white/55">
-                Movies &amp; showtimes — live site updates on save
+                Movies and billboard display — live site updates on save
               </p>
             </div>
           </div>
@@ -335,6 +248,9 @@ export function AdminDashboard({
                 <TableHead className="hidden text-white/80 md:table-cell">
                   Rating
                 </TableHead>
+                <TableHead className="hidden text-white/80 lg:table-cell">
+                  Showtime display
+                </TableHead>
                 <TableHead className="text-center text-white/80">
                   Now playing
                 </TableHead>
@@ -367,27 +283,11 @@ export function AdminDashboard({
                         <p className="truncate font-semibold text-white">
                           {movie.title ?? 'Untitled'}
                         </p>
-                        <Collapsible className="mt-2 md:hidden">
-                          <CollapsibleTrigger asChild>
-                            <Button
-                              size="sm"
-                              variant="ghost"
-                              className="h-8 px-2 text-xs text-[#F7B500] hover:bg-[#F7B500]/10 hover:text-[#F7B500]"
-                            >
-                              Showtimes ({showtimesByMovie[movie.id]?.length ?? 0})
-                            </Button>
-                          </CollapsibleTrigger>
-                          <CollapsibleContent className="mt-2 space-y-2 rounded-xl border border-white/10 bg-black/30 p-3">
-                            <ShowtimeBlock
-                              movieId={movie.id}
-                              items={showtimesByMovie[movie.id] ?? []}
-                              onAdd={(local, is3d) =>
-                                handleAddShowtime(movie.id, local, is3d)
-                              }
-                              onDelete={handleDeleteShowtime}
-                            />
-                          </CollapsibleContent>
-                        </Collapsible>
+                        {movie.showtime_display && (
+                          <p className="mt-1 line-clamp-1 text-xs text-[#F7B500] md:hidden">
+                            {movie.showtime_display}
+                          </p>
+                        )}
                       </div>
                     </div>
                   </TableCell>
@@ -398,6 +298,11 @@ export function AdminDashboard({
                     >
                       {movie.rating ?? '—'}
                     </Badge>
+                  </TableCell>
+                  <TableCell className="hidden lg:table-cell">
+                    <p className="line-clamp-2 text-sm text-white/70">
+                      {movie.showtime_display ?? '—'}
+                    </p>
                   </TableCell>
                   <TableCell className="text-center">
                     <div className="flex justify-center">
@@ -447,8 +352,7 @@ export function AdminDashboard({
                           <AlertDialogHeader>
                             <AlertDialogTitle>Delete movie?</AlertDialogTitle>
                             <AlertDialogDescription className="text-white/60">
-                              This removes &quot;{movie.title}&quot; and its
-                              showtimes from the database.
+                              This removes &quot;{movie.title}&quot; from the database.
                             </AlertDialogDescription>
                           </AlertDialogHeader>
                           <AlertDialogFooter>
@@ -485,31 +389,6 @@ export function AdminDashboard({
           )}
         </div>
 
-        {/* Desktop showtime sections */}
-        <div className="hidden space-y-4 md:block">
-          {movies.map((movie) => (
-            <section
-              key={`st-${movie.id}`}
-              className="rounded-2xl border border-white/10 bg-[#0c0c0c] p-4 shadow-lg shadow-black/30"
-            >
-              <div className="mb-3 flex flex-wrap items-center gap-2">
-                <Calendar className="h-4 w-4 text-[#F7B500]" />
-                <h2 className="text-sm font-semibold uppercase tracking-wider text-white/80">
-                  Showtimes —{' '}
-                  <span className="text-white">{movie.title}</span>
-                </h2>
-              </div>
-              <ShowtimeBlock
-                movieId={movie.id}
-                items={showtimesByMovie[movie.id] ?? []}
-                onAdd={(local, is3d) =>
-                  handleAddShowtime(movie.id, local, is3d)
-                }
-                onDelete={handleDeleteShowtime}
-              />
-            </section>
-          ))}
-        </div>
       </main>
 
       <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
@@ -586,6 +465,18 @@ export function AdminDashboard({
                 ))}
               </select>
             </div>
+            <div className="space-y-2">
+              <Label htmlFor="showtime_display">Showtime display</Label>
+              <Input
+                id="showtime_display"
+                value={form.showtime_display}
+                onChange={(e) =>
+                  setForm((f) => ({ ...f, showtime_display: e.target.value }))
+                }
+                className="border-white/15 bg-black/40 text-white"
+                placeholder="16 Apr - 22 Apr, 4:30 PM"
+              />
+            </div>
           </div>
           <DialogFooter className="gap-2 sm:gap-0">
             <Button
@@ -614,97 +505,6 @@ export function AdminDashboard({
           </DialogFooter>
         </DialogContent>
       </Dialog>
-    </div>
-  )
-}
-
-function ShowtimeBlock({
-  movieId,
-  items,
-  onAdd,
-  onDelete,
-}: {
-  movieId: string
-  items: ShowtimeRow[]
-  onAdd: (localDatetime: string, is3d: boolean) => Promise<boolean>
-  onDelete: (id: string) => void
-}) {
-  const [local, setLocal] = useState('')
-  const [is3d, setIs3d] = useState(false)
-  const [adding, setAdding] = useState(false)
-
-  return (
-    <div className="space-y-3">
-      {items.length === 0 ? (
-        <p className="text-sm text-white/45">No showtimes yet.</p>
-      ) : (
-        <ul className="space-y-2">
-          {items.map((s) => (
-            <li
-              key={s.id}
-              className="flex flex-col gap-2 rounded-xl border border-white/10 bg-black/25 px-3 py-2 sm:flex-row sm:items-center sm:justify-between"
-            >
-              <div className="flex items-center gap-2 text-sm text-white/85">
-                <Clock className="h-4 w-4 shrink-0 text-[#F7B500]" />
-                <span>{formatShowtime(s.start_time)}</span>
-                {s.is_3d && (
-                  <Badge className="border-[#E50914]/40 bg-[#E50914]/15 text-[#E50914]">
-                    3D
-                  </Badge>
-                )}
-              </div>
-              <Button
-                size="sm"
-                variant="outline"
-                className="border-red-500/30 text-red-400 hover:bg-red-500/15"
-                onClick={() => void onDelete(s.id)}
-              >
-                <Trash2 className="mr-2 h-4 w-4" />
-                Remove
-              </Button>
-            </li>
-          ))}
-        </ul>
-      )}
-
-      <div className="flex flex-col gap-3 rounded-xl border border-white/10 bg-black/30 p-3 sm:flex-row sm:items-end">
-        <div className="flex-1 space-y-2">
-          <Label className="text-white/70">Add showtime</Label>
-          <Input
-            type="datetime-local"
-            value={local}
-            onChange={(e) => setLocal(e.target.value)}
-            className="border-white/15 bg-black/40 text-white"
-          />
-        </div>
-        <div className="flex items-center gap-2 pb-1">
-          <Checkbox
-            id={`3d-${movieId}`}
-            checked={is3d}
-            onCheckedChange={(checked) => setIs3d(Boolean(checked))}
-          />
-          <Label htmlFor={`3d-${movieId}`} className="text-sm text-white/80">
-            3D
-          </Label>
-        </div>
-        <Button
-          type="button"
-          disabled={adding}
-          className="bg-[#F7B500] font-semibold text-black hover:bg-[#F7B500]/90"
-          onClick={async () => {
-            setAdding(true)
-            const ok = await onAdd(local, is3d)
-            setAdding(false)
-            if (ok) {
-              setLocal('')
-              setIs3d(false)
-            }
-          }}
-        >
-          <Plus className="mr-2 h-4 w-4" />
-          Add
-        </Button>
-      </div>
     </div>
   )
 }

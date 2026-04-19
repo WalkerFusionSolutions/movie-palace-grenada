@@ -1,7 +1,7 @@
 'use client'
 
 import { motion } from 'framer-motion'
-import { Ticket, Sparkles, Users, Baby } from 'lucide-react'
+import { Ticket, Sparkles, Users, Baby, Glasses } from 'lucide-react'
 import { Card, CardContent } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 
@@ -95,9 +95,9 @@ export function PricingSection() {
                   <Baby className="h-7 w-7 text-blue-400" />
                 </div>
                 <h3 className="mb-1 text-xl font-bold text-white">Kids</h3>
-                <p className="mb-4 text-sm text-white/60">Under 12 years</p>
+                <p className="mb-4 text-sm text-white/60">For PG Movies</p>
                 <div className="flex items-baseline gap-1">
-                  <span className="text-4xl font-black text-white">$15</span>
+                  <span className="text-4xl font-black text-white">$15.00</span>
                   <span className="text-lg text-white/60">EC</span>
                 </div>
               </CardContent>
@@ -137,6 +137,29 @@ export function PricingSection() {
                   <p className="text-sm text-white/50">Every Wednesday</p>
                 </div>
               </div>
+            </CardContent>
+          </Card>
+        </motion.div>
+
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.5, delay: 0.45 }}
+          className="mt-6"
+        >
+          <Card className="glass-card border-white/10">
+            <CardContent className="flex items-center justify-between gap-3 p-5">
+              <div className="flex items-center gap-3">
+                <div className="flex h-11 w-11 items-center justify-center rounded-lg bg-white/10">
+                  <Glasses className="h-5 w-5 text-[#F7B500]" />
+                </div>
+                <div>
+                  <p className="font-semibold text-white">3D Glasses</p>
+                  <p className="text-sm text-white/55">Add-on per ticket</p>
+                </div>
+              </div>
+              <p className="text-xl font-black text-[#F7B500]">$10.00</p>
             </CardContent>
           </Card>
         </motion.div>

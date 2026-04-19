@@ -1,17 +1,14 @@
 'use client'
 
 import { motion } from 'framer-motion'
-import { Ticket } from 'lucide-react'
 import { Badge } from '@/components/ui/badge'
-import { Button } from '@/components/ui/button'
 import type { Movie } from '@/lib/movies'
 
 interface NowPlayingProps {
   movies: Movie[]
-  onBookTickets: (movieId: string) => void
 }
 
-export function NowPlaying({ movies, onBookTickets }: NowPlayingProps) {
+export function NowPlaying({ movies }: NowPlayingProps) {
   const getRatingColor = (rating: string) => {
     switch (rating) {
       case 'G':
@@ -87,16 +84,6 @@ export function NowPlaying({ movies, onBookTickets }: NowPlayingProps) {
                     {rating}
                   </Badge>
 
-                  <div className="absolute inset-0 flex items-center justify-center bg-black/60 opacity-0 transition-opacity group-hover:opacity-100">
-                    <Button
-                      size="lg"
-                      className="bg-[#E50914] text-white hover:bg-[#E50914]/90 glow-red"
-                      onClick={() => onBookTickets(movie.id)}
-                    >
-                      <Ticket className="mr-2 h-5 w-5" />
-                      Buy Tickets
-                    </Button>
-                  </div>
                 </div>
 
                 <div className="p-4">
@@ -110,15 +97,6 @@ export function NowPlaying({ movies, onBookTickets }: NowPlayingProps) {
                   )}
                 </div>
 
-                <div className="border-t border-white/10 p-4 lg:hidden">
-                  <Button
-                    className="w-full bg-[#E50914] text-white hover:bg-[#E50914]/90"
-                    onClick={() => onBookTickets(movie.id)}
-                  >
-                    <Ticket className="mr-2 h-4 w-4" />
-                    Buy Tickets
-                  </Button>
-                </div>
               </motion.div>
             )
           })}

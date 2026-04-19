@@ -2,6 +2,7 @@
 
 import { motion } from 'framer-motion'
 import { MapPin, Clock, Phone, Instagram, Facebook } from 'lucide-react'
+import Image from 'next/image'
 
 export function Footer() {
   return (
@@ -15,13 +16,13 @@ export function Footer() {
             viewport={{ once: true }}
           >
             <div className="mb-4 flex items-center gap-3">
-              <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-[#E50914]">
-                <span className="text-2xl font-black text-white">MP</span>
-              </div>
-              <div>
-                <h3 className="text-lg font-bold text-white">Movie Palace</h3>
-                <p className="text-sm text-[#F7B500]">Grenada</p>
-              </div>
+              <Image
+                src="/logo.png"
+                alt="Movie Palace Grenada"
+                width={200}
+                height={64}
+                className="h-12 w-auto object-contain"
+              />
             </div>
             <p className="text-sm text-white/60">
               Your premier cinema destination in the Spice Isle. Experience movies the way they were meant to be seen.

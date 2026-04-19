@@ -1,6 +1,6 @@
 import { createClient } from '@/lib/supabase/server'
 import { HomeClient } from './home-client'
-import { normalizeMovieRow, type ShowtimeRow } from '@/lib/movies'
+import { normalizeMovieRow } from '@/lib/movies'
 
 export const revalidate = 0
 
@@ -22,23 +22,6 @@ export default async function HomePage() {
   const nowPlaying = (nowRows ?? []).map((r) => normalizeMovieRow(r as Record<string, unknown>))
   const comingSoon = (soonRows ?? []).map((r) => normalizeMovieRow(r as Record<string, unknown>))
 
-  const movieIds = nowPlaying.map((m) => m.id)
-
-  let showtimes: ShowtimeRow[] = []
-  if (movieIds.length > 0) {
-    const { data: stRows, error: stError } = await supabase
-      .from('showtimes')
-      .select('id,movie_id,start_time,is_3d')
-      .in('movie_id', movieIds)
-      .order('start_time', { ascending: true })
-
-    if (stError) {
-      console.error('showtimes fetch:', stError.message)
-    } else {
-      showtimes = (stRows ?? []) as ShowtimeRow[]
-    }
-  }
-
   if (nowError) {
     console.error('now playing fetch:', nowError.message)
   }
@@ -50,7 +33,6 @@ export default async function HomePage() {
     <HomeClient
       nowPlaying={nowError ? [] : nowPlaying}
       comingSoon={soonError ? [] : comingSoon}
-      showtimes={showtimes}
     />
   )
 }

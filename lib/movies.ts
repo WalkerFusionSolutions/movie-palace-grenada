@@ -8,6 +8,7 @@ export interface Movie {
   is_now_playing: boolean
   is_coming_soon: boolean
   rating: string | null
+  showtime_display: string | null
 }
 
 /** Row shape for `public.showtimes` (Supabase). */
@@ -60,6 +61,7 @@ export function normalizeMovieRow(m: Record<string, unknown>): Movie {
     is_now_playing: Boolean(m.is_now_playing),
     is_coming_soon: Boolean(m.is_coming_soon),
     rating: (m.rating as string) ?? null,
+    showtime_display: (m.showtime_display as string) ?? null,
   }
 }
 

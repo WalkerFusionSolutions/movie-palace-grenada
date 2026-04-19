@@ -4,45 +4,65 @@ import { useState, useCallback, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import useEmblaCarousel from 'embla-carousel-react'
 import Autoplay from 'embla-carousel-autoplay'
-import { Play, X, Ticket, ChevronLeft, ChevronRight, Clock } from 'lucide-react'
+import { Play, X, ChevronLeft, ChevronRight, Clock } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import type { Movie } from '@/lib/movies'
 
 interface HybridHeroCarouselProps {
   featuredMovies: Movie[]
-  onBookTickets: (movieId: string) => void
 }
 
 function trailerSrc(url: string | null) {
   if (!url) return ''
-  const sep = url.includes('?') ? '&' : '?'
-  return `${url}${sep}autoplay=1&rel=0`
+  try {
+    const parsed = new URL(url)
+    const host = parsed.hostname.replace('www.', '')
+    const ytIdFromPath =
+      host === 'youtu.be' ? parsed.pathname.split('/').filter(Boolean)[0] : null
+    const ytIdFromQuery = parsed.searchParams.get('v')
+    const ytId = ytIdFromPath ?? ytIdFromQuery
+
+    if (host.includes('youtube.com') || host === 'youtu.be') {
+      if (!ytId && parsed.pathname.includes('/embed/')) {
+        parsed.searchParams.set('autoplay', '1')
+        parsed.searchParams.set('rel', '0')
+        return parsed.toString()
+      }
+      if (!ytId) return ''
+      return `https://www.youtube.com/embed/${ytId}?autoplay=1&rel=0`
+    }
+
+    parsed.searchParams.set('autoplay', '1')
+    return parsed.toString()
+  } catch {
+    return ''
+  }
 }
 
-export function HybridHeroCarousel({
-  featuredMovies,
-  onBookTickets,
-}: HybridHeroCarouselProps) {
+export function HybridHeroCarousel({ featuredMovies }: HybridHeroCarouselProps) {
   const [selectedIndex, setSelectedIndex] = useState(0)
   const [isTrailerPlaying, setIsTrailerPlaying] = useState(false)
   const [showArrows, setShowArrows] = useState(false)
 
   const [emblaRef, emblaApi] = useEmblaCarousel(
     { loop: featuredMovies.length > 1, duration: 30 },
-    [Autoplay({ delay: 6000, stopOnInteraction: false, stopOnMouseEnter: true })]
+    [Autoplay({ delay: 8000, stopOnInteraction: false, stopOnMouseEnter: true })]
   )
 
   const scrollPrev = useCallback(() => {
+    setIsTrailerPlaying(false)
     if (emblaApi) emblaApi.scrollPrev()
   }, [emblaApi])
 
   const scrollNext = useCallback(() => {
+    setIsTrailerPlaying(false)
     if (emblaApi) emblaApi.scrollNext()
   }, [emblaApi])
 
   const scrollTo = useCallback(
     (index: number) => {
+      setIsTrailerPlaying(false)
       if (emblaApi) emblaApi.scrollTo(index)
     },
     [emblaApi]
@@ -51,8 +71,15 @@ export function HybridHeroCarousel({
   const onSelect = useCallback(() => {
     if (!emblaApi) return
     setSelectedIndex(emblaApi.selectedScrollSnap())
-    setIsTrailerPlaying(false)
   }, [emblaApi])
+
+  useEffect(() => {
+    if (!emblaApi) return
+    const autoplay = emblaApi.plugins().autoplay
+    if (!autoplay) return
+    if (isTrailerPlaying) autoplay.stop()
+    else autoplay.play()
+  }, [emblaApi, isTrailerPlaying])
 
   useEffect(() => {
     if (!emblaApi) return
@@ -200,14 +227,6 @@ export function HybridHeroCarousel({
                               transition={{ delay: 0.5, duration: 0.5 }}
                               className="flex flex-wrap gap-4"
                             >
-                              <Button
-                                size="lg"
-                                className="bg-[#E50914] px-8 py-6 text-lg font-semibold text-white shadow-[0_0_30px_rgba(229,9,20,0.4)] transition-all hover:bg-[#E50914]/90 hover:shadow-[0_0_40px_rgba(229,9,20,0.6)]"
-                                onClick={() => onBookTickets(movie.id)}
-                              >
-                                <Ticket className="mr-2 h-5 w-5" />
-                                Book Tickets
-                              </Button>
                               <Button
                                 size="lg"
                                 variant="outline"

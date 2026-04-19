@@ -1,64 +1,15 @@
 'use client'
 
-import { useState } from 'react'
 import { motion } from 'framer-motion'
-import { Bell, BellRing, Check } from 'lucide-react'
 import { Badge } from '@/components/ui/badge'
-import { Button } from '@/components/ui/button'
 import type { Movie } from '@/lib/movies'
 
 interface MovieCardProps {
   movie: Movie
-  selectedDate: string
-  showtimes: string[]
   index: number
 }
 
-export function MovieCard({
-  movie,
-  selectedDate,
-  showtimes,
-  index,
-}: MovieCardProps) {
-  const [reminders, setReminders] = useState<Set<string>>(new Set())
-  const [justAdded, setJustAdded] = useState<string | null>(null)
-
-  const handleReminder = (time: string) => {
-    const key = `${movie.id}-${time}`
-
-    setReminders((prev) => {
-      const newSet = new Set(prev)
-      if (newSet.has(key)) {
-        newSet.delete(key)
-      } else {
-        newSet.add(key)
-        setJustAdded(key)
-        setTimeout(() => setJustAdded(null), 1500)
-
-        const movieDate = new Date(selectedDate)
-        const [timePart, period] = time.split(' ')
-        const [hours, minutes] = timePart.split(':').map(Number)
-        let hour24 = hours
-        if (period === 'PM' && hours !== 12) hour24 += 12
-        if (period === 'AM' && hours === 12) hour24 = 0
-
-        movieDate.setHours(hour24, minutes)
-
-        const endDate = new Date(movieDate)
-        endDate.setHours(endDate.getHours() + 2)
-
-        const formatDate = (d: Date) =>
-          d.toISOString().replace(/[-:]/g, '').split('.')[0] + 'Z'
-
-        const title = movie.title ?? 'Movie'
-        const calendarUrl = `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${encodeURIComponent(title + ' at Movie Palace')}&dates=${formatDate(movieDate)}/${formatDate(endDate)}&details=${encodeURIComponent('Movie: ' + title + '\nLocation: Movie Palace Grenada, Excel Plaza')}&location=${encodeURIComponent('Excel Plaza, Grand Anse, Grenada')}`
-
-        window.open(calendarUrl, '_blank')
-      }
-      return newSet
-    })
-  }
-
+export function MovieCard({ movie, index }: MovieCardProps) {
   const getRatingColor = (rating: string) => {
     switch (rating) {
       case 'G':
@@ -73,8 +24,6 @@ export function MovieCard({
         return 'bg-gray-500/20 text-gray-400 border-gray-500/30'
     }
   }
-
-  if (showtimes.length === 0) return null
 
   const rating = movie.rating ?? 'NR'
   const poster = movie.poster_url ?? ''
@@ -123,53 +72,8 @@ export function MovieCard({
             <p className="mb-2 text-xs font-medium uppercase tracking-wider text-white/50">
               Showtimes
             </p>
-            <div className="flex flex-wrap gap-2">
-              {showtimes.map((time) => {
-                const key = `${movie.id}-${time}`
-                const hasReminder = reminders.has(key)
-                const isJustAdded = justAdded === key
-
-                return (
-                  <div key={time} className="group relative">
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      className={`h-10 border-white/20 bg-white/5 pr-10 text-white transition-all hover:border-[#E50914] hover:bg-[#E50914]/20 hover:text-white ${
-                        hasReminder ? 'border-[#F7B500]/50 bg-[#F7B500]/10' : ''
-                      }`}
-                    >
-                      {time}
-                    </Button>
-                    <button
-                      type="button"
-                      onClick={() => handleReminder(time)}
-                      className={`absolute right-1 top-1/2 -translate-y-1/2 rounded-md p-1.5 transition-all ${
-                        hasReminder
-                          ? 'text-[#F7B500]'
-                          : 'text-white/40 hover:text-[#F7B500]'
-                      }`}
-                      title={hasReminder ? 'Remove reminder' : 'Add to calendar'}
-                      aria-label={
-                        hasReminder ? 'Remove reminder' : 'Add to calendar'
-                      }
-                    >
-                      {isJustAdded ? (
-                        <motion.div
-                          initial={{ scale: 0 }}
-                          animate={{ scale: 1 }}
-                          transition={{ type: 'spring', stiffness: 500 }}
-                        >
-                          <Check className="h-4 w-4 text-green-400" />
-                        </motion.div>
-                      ) : hasReminder ? (
-                        <BellRing className="h-4 w-4" />
-                      ) : (
-                        <Bell className="h-4 w-4" />
-                      )}
-                    </button>
-                  </div>
-                )
-              })}
+            <div className="rounded-lg border border-[#F7B500]/30 bg-[#F7B500]/10 px-3 py-2 text-sm font-semibold text-[#F7B500]">
+              {movie.showtime_display ?? 'Showtimes will be announced soon'}
             </div>
           </div>
         </div>

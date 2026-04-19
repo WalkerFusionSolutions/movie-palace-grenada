@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { Menu, X, User } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import Link from 'next/link'
+import Image from 'next/image'
 
 const navLinks = [
   { href: '#now-playing', label: 'Now Playing' },
@@ -38,13 +39,14 @@ export function Header() {
         <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 md:h-20 md:px-8">
           {/* Logo */}
           <Link href="/" className="flex items-center gap-3">
-            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-[#E50914] md:h-12 md:w-12">
-              <span className="text-xl font-black text-white md:text-2xl">MP</span>
-            </div>
-            <div className="hidden sm:block">
-              <h1 className="text-lg font-bold leading-tight text-white">Movie Palace</h1>
-              <p className="text-xs text-[#F7B500]">Grenada</p>
-            </div>
+            <Image
+              src="/logo.png"
+              alt="Movie Palace Grenada"
+              width={180}
+              height={60}
+              priority
+              className="h-10 w-auto object-contain md:h-12"
+            />
           </Link>
 
           {/* Desktop Navigation */}
