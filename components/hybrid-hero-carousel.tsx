@@ -129,7 +129,7 @@ export function HybridHeroCarousel({ featuredMovies }: HybridHeroCarouselProps) 
 
   return (
     <section
-      className="relative w-full overflow-hidden pt-[160px]"
+      className="relative w-full overflow-hidden pt-[136px]"
       onMouseEnter={() => setShowArrows(true)}
       onMouseLeave={() => setShowArrows(false)}
     >

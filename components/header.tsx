@@ -30,13 +30,11 @@ export function Header() {
       <motion.header
         initial={{ y: -100 }}
         animate={{ y: 0 }}
-        className={`fixed left-0 right-0 top-0 z-50 transition-all duration-300 ${
-          isScrolled
-            ? 'glass border-b border-white/10'
-            : 'bg-gradient-to-b from-black/60 to-transparent'
+        className={`fixed left-0 right-0 top-0 z-50 border-b border-white/10 bg-black/45 backdrop-blur-md transition-all duration-300 ${
+          isScrolled ? 'shadow-[0_8px_30px_rgba(0,0,0,0.35)]' : ''
         }`}
       >
-        <div className="mx-auto flex min-h-[160px] max-w-7xl items-center justify-between px-4 py-4 md:px-8">
+        <div className="mx-auto flex min-h-[136px] max-w-7xl items-center justify-between px-4 py-2 md:px-8">
           {/* Logo */}
           <Link href="/" className="flex items-center gap-3">
             <Image
@@ -94,7 +92,7 @@ export function Header() {
             initial={{ opacity: 0, y: -20 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -20 }}
-            className="fixed inset-x-0 top-[160px] z-40 border-b border-white/10 glass md:hidden"
+            className="fixed inset-x-0 top-[136px] z-40 border-b border-white/10 glass md:hidden"
           >
             <nav className="flex flex-col p-4">
               {navLinks.map((link) => (
