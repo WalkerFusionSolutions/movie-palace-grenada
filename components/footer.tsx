@@ -19,9 +19,9 @@ export function Footer() {
               <Image
                 src="/logo.png"
                 alt="Movie Palace Grenada"
-                width={200}
-                height={64}
-                className="h-12 w-auto object-contain"
+                width={540}
+                height={180}
+                className="h-[120px] w-auto object-contain"
               />
             </div>
             <p className="text-sm text-white/60">

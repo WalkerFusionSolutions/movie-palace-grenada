@@ -36,7 +36,7 @@ export function Header() {
             : 'bg-gradient-to-b from-black/60 to-transparent'
         }`}
       >
-        <div className="mx-auto flex h-24 max-w-7xl items-center justify-between px-4 md:h-28 md:px-8">
+        <div className="mx-auto flex min-h-[160px] max-w-7xl items-center justify-between px-4 py-4 md:px-8">
           {/* Logo */}
           <Link href="/" className="flex items-center gap-3">
             <Image
@@ -45,7 +45,7 @@ export function Header() {
               width={540}
               height={180}
               priority
-              className="h-16 w-auto object-contain md:h-20"
+              className="h-[120px] w-auto object-contain"
             />
           </Link>
 
@@ -94,7 +94,7 @@ export function Header() {
             initial={{ opacity: 0, y: -20 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -20 }}
-            className="fixed inset-x-0 top-16 z-40 border-b border-white/10 glass md:hidden"
+            className="fixed inset-x-0 top-[160px] z-40 border-b border-white/10 glass md:hidden"
           >
             <nav className="flex flex-col p-4">
               {navLinks.map((link) => (

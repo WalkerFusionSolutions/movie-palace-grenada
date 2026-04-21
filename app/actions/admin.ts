@@ -20,6 +20,7 @@ async function requireUser() {
 function revalidatePublic() {
   revalidatePath('/')
   revalidatePath('/admin')
+  revalidatePath('/movies/[id]', 'page')
 }
 
 export async function toggleMovieFlag(

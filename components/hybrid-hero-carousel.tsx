@@ -1,9 +1,8 @@
 'use client'
 
-import { useState, useCallback, useEffect } from 'react'
+import { useState, useCallback, useEffect, useRef } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import useEmblaCarousel from 'embla-carousel-react'
-import Autoplay from 'embla-carousel-autoplay'
 import { Play, X, ChevronLeft, ChevronRight, Clock } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
@@ -18,26 +17,31 @@ interface HybridHeroCarouselProps {
 export function HybridHeroCarousel({ featuredMovies }: HybridHeroCarouselProps) {
   const [selectedIndex, setSelectedIndex] = useState(0)
   const [isTrailerPlaying, setIsTrailerPlaying] = useState(false)
+  const [isAutoAdvanceEnabled, setIsAutoAdvanceEnabled] = useState(true)
   const [showArrows, setShowArrows] = useState(false)
+  const autoAdvanceRef = useRef<number | null>(null)
 
-  const [emblaRef, emblaApi] = useEmblaCarousel(
-    { loop: featuredMovies.length > 1, duration: 30 },
-    [Autoplay({ delay: 8000, stopOnInteraction: false, stopOnMouseEnter: true })]
-  )
+  const [emblaRef, emblaApi] = useEmblaCarousel({
+    loop: featuredMovies.length > 1,
+    duration: 30,
+  })
 
   const scrollPrev = useCallback(() => {
     setIsTrailerPlaying(false)
+    setIsAutoAdvanceEnabled(true)
     if (emblaApi) emblaApi.scrollPrev()
   }, [emblaApi])
 
   const scrollNext = useCallback(() => {
     setIsTrailerPlaying(false)
+    setIsAutoAdvanceEnabled(true)
     if (emblaApi) emblaApi.scrollNext()
   }, [emblaApi])
 
   const scrollTo = useCallback(
     (index: number) => {
       setIsTrailerPlaying(false)
+      setIsAutoAdvanceEnabled(true)
       if (emblaApi) emblaApi.scrollTo(index)
     },
     [emblaApi]
@@ -49,12 +53,26 @@ export function HybridHeroCarousel({ featuredMovies }: HybridHeroCarouselProps) 
   }, [emblaApi])
 
   useEffect(() => {
-    if (!emblaApi) return
-    const autoplay = emblaApi.plugins().autoplay
-    if (!autoplay) return
-    if (isTrailerPlaying) autoplay.stop()
-    else autoplay.play()
-  }, [emblaApi, isTrailerPlaying])
+    if (!emblaApi || featuredMovies.length <= 1) return
+
+    if (autoAdvanceRef.current) {
+      window.clearInterval(autoAdvanceRef.current)
+      autoAdvanceRef.current = null
+    }
+
+    if (isTrailerPlaying || !isAutoAdvanceEnabled) return
+
+    autoAdvanceRef.current = window.setInterval(() => {
+      emblaApi.scrollNext()
+    }, 8000)
+
+    return () => {
+      if (autoAdvanceRef.current) {
+        window.clearInterval(autoAdvanceRef.current)
+        autoAdvanceRef.current = null
+      }
+    }
+  }, [emblaApi, featuredMovies.length, isTrailerPlaying, isAutoAdvanceEnabled])
 
   useEffect(() => {
     if (!emblaApi) return
@@ -111,7 +129,7 @@ export function HybridHeroCarousel({ featuredMovies }: HybridHeroCarouselProps) 
 
   return (
     <section
-      className="relative w-full overflow-hidden pt-16 md:pt-20"
+      className="relative w-full overflow-hidden pt-[160px]"
       onMouseEnter={() => setShowArrows(true)}
       onMouseLeave={() => setShowArrows(false)}
     >
@@ -195,6 +213,16 @@ export function HybridHeroCarousel({ featuredMovies }: HybridHeroCarouselProps) 
                             <motion.div
                               initial={{ opacity: 0, y: 20 }}
                               animate={{ opacity: 1, y: 0 }}
+                              transition={{ delay: 0.4, duration: 0.5 }}
+                            >
+                              <p className="mb-8 max-w-lg text-pretty text-lg leading-relaxed text-white/70">
+                                {movie.description ?? ''}
+                              </p>
+                            </motion.div>
+
+                            <motion.div
+                              initial={{ opacity: 0, y: 20 }}
+                              animate={{ opacity: 1, y: 0 }}
                               transition={{ delay: 0.5, duration: 0.5 }}
                               className="flex flex-wrap gap-4"
                             >
@@ -203,7 +231,10 @@ export function HybridHeroCarousel({ featuredMovies }: HybridHeroCarouselProps) 
                                 variant="outline"
                                 className="border-white/20 bg-white/5 px-8 py-6 text-lg font-semibold text-white backdrop-blur-md transition-all hover:bg-white/10 hover:text-white"
                                 disabled={!movie.trailer_url}
-                                onClick={() => setIsTrailerPlaying(true)}
+                                onClick={() => {
+                                  setIsTrailerPlaying(true)
+                                  setIsAutoAdvanceEnabled(false)
+                                }}
                               >
                                 <Play className="mr-2 h-5 w-5" />
                                 Watch Trailer
