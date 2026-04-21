@@ -8,36 +8,11 @@ import { Play, X, ChevronLeft, ChevronRight, Clock } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import type { Movie } from '@/lib/movies'
+import { toYouTubeEmbedUrl } from '@/lib/youtube'
+import Image from 'next/image'
 
 interface HybridHeroCarouselProps {
   featuredMovies: Movie[]
-}
-
-function trailerSrc(url: string | null) {
-  if (!url) return ''
-  try {
-    const parsed = new URL(url)
-    const host = parsed.hostname.replace('www.', '')
-    const ytIdFromPath =
-      host === 'youtu.be' ? parsed.pathname.split('/').filter(Boolean)[0] : null
-    const ytIdFromQuery = parsed.searchParams.get('v')
-    const ytId = ytIdFromPath ?? ytIdFromQuery
-
-    if (host.includes('youtube.com') || host === 'youtu.be') {
-      if (!ytId && parsed.pathname.includes('/embed/')) {
-        parsed.searchParams.set('autoplay', '1')
-        parsed.searchParams.set('rel', '0')
-        return parsed.toString()
-      }
-      if (!ytId) return ''
-      return `https://www.youtube.com/embed/${ytId}?autoplay=1&rel=0`
-    }
-
-    parsed.searchParams.set('autoplay', '1')
-    return parsed.toString()
-  } catch {
-    return ''
-  }
 }
 
 export function HybridHeroCarousel({ featuredMovies }: HybridHeroCarouselProps) {
@@ -118,9 +93,14 @@ export function HybridHeroCarousel({ featuredMovies }: HybridHeroCarouselProps) 
     return (
       <section className="relative w-full overflow-hidden bg-[#141414] px-4 pb-24 pt-28 md:pt-32">
         <div className="mx-auto max-w-3xl text-center">
-          <h1 className="text-3xl font-bold text-white md:text-5xl">
-            Welcome to <span className="text-[#E50914]">Movie Palace</span>
-          </h1>
+          <Image
+            src="/logo.png"
+            alt="Movie Palace Grenada"
+            width={360}
+            height={120}
+            className="mx-auto h-24 w-auto object-contain md:h-28"
+            priority
+          />
           <p className="mt-4 text-white/60">
             Showtimes will appear here once films are added in the admin panel.
           </p>
@@ -208,18 +188,9 @@ export function HybridHeroCarousel({ featuredMovies }: HybridHeroCarouselProps) 
                               </Badge>
                               <span className="flex items-center gap-1.5 text-white/80">
                                 <Clock className="h-4 w-4" />
-                                Now at Movie Palace
+                                Now Showing
                               </span>
                             </motion.div>
-
-                            <motion.p
-                              initial={{ opacity: 0, y: 20 }}
-                              animate={{ opacity: 1, y: 0 }}
-                              transition={{ delay: 0.4, duration: 0.5 }}
-                              className="mb-8 max-w-lg text-pretty text-lg leading-relaxed text-white/70"
-                            >
-                              {movie.description ?? ''}
-                            </motion.p>
 
                             <motion.div
                               initial={{ opacity: 0, y: 20 }}
@@ -325,7 +296,7 @@ export function HybridHeroCarousel({ featuredMovies }: HybridHeroCarouselProps) 
               onClick={(e) => e.stopPropagation()}
             >
               <iframe
-                src={trailerSrc(currentMovie.trailer_url)}
+                src={toYouTubeEmbedUrl(currentMovie.trailer_url)}
                 title={`${currentMovie.title ?? 'Movie'} Trailer`}
                 className="h-full w-full rounded-xl"
                 allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"

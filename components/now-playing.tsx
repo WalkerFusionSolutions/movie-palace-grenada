@@ -3,6 +3,7 @@
 import { motion } from 'framer-motion'
 import { Badge } from '@/components/ui/badge'
 import type { Movie } from '@/lib/movies'
+import Link from 'next/link'
 
 interface NowPlayingProps {
   movies: Movie[]
@@ -64,8 +65,11 @@ export function NowPlaying({ movies }: NowPlayingProps) {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ delay: index * 0.05, duration: 0.4 }}
-                className="group relative overflow-hidden rounded-xl border border-white/10 bg-[#141414]"
               >
+                <Link
+                  href={`/movies/${movie.id}`}
+                  className="group relative block overflow-hidden rounded-xl border border-white/10 bg-[#141414]"
+                >
                 <div className="relative aspect-[2/3] overflow-hidden">
                   <div
                     className="absolute inset-0 bg-cover bg-center transition-transform duration-500 group-hover:scale-110"
@@ -90,13 +94,11 @@ export function NowPlaying({ movies }: NowPlayingProps) {
                   <h3 className="mb-1 line-clamp-2 text-lg font-bold text-white">
                     {movie.title ?? 'Untitled'}
                   </h3>
-                  {movie.description && (
-                    <p className="mb-2 line-clamp-2 text-sm text-white/50">
-                      {movie.description}
-                    </p>
-                  )}
+                  <p className="mb-2 line-clamp-2 text-sm font-medium text-[#F7B500]">
+                    Showtimes: {movie.showtime_display ?? 'To be announced'}
+                  </p>
                 </div>
-
+                </Link>
               </motion.div>
             )
           })}

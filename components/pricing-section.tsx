@@ -50,8 +50,7 @@ export function PricingSection() {
                   </div>
                   <div className="text-center md:text-right">
                     <div className="flex items-baseline justify-center gap-1 md:justify-end">
-                      <span className="text-5xl font-black text-[#F7B500]">$15</span>
-                      <span className="text-xl text-white/60">EC</span>
+                      <span className="text-5xl font-black text-[#F7B500]">$15 EC</span>
                     </div>
                     <p className="text-sm text-white/50">Every Tuesday</p>
                   </div>
@@ -73,10 +72,9 @@ export function PricingSection() {
                   <Users className="h-7 w-7 text-[#E50914]" />
                 </div>
                 <h3 className="mb-1 text-xl font-bold text-white">Adults</h3>
-                <p className="mb-4 text-sm text-white/60">Standard admission</p>
+                <p className="mb-4 text-sm text-white/60">Standard Admission</p>
                 <div className="flex items-baseline gap-1">
-                  <span className="text-4xl font-black text-white">$25</span>
-                  <span className="text-lg text-white/60">EC</span>
+                  <span className="text-4xl font-black text-white">$20 EC</span>
                 </div>
               </CardContent>
             </Card>
@@ -97,8 +95,7 @@ export function PricingSection() {
                 <h3 className="mb-1 text-xl font-bold text-white">Kids</h3>
                 <p className="mb-4 text-sm text-white/60">For PG Movies</p>
                 <div className="flex items-baseline gap-1">
-                  <span className="text-4xl font-black text-white">$15.00</span>
-                  <span className="text-lg text-white/60">EC</span>
+                  <span className="text-4xl font-black text-white">$15 EC</span>
                 </div>
               </CardContent>
             </Card>
@@ -126,13 +123,12 @@ export function PricingSection() {
                       SPECIAL DEAL
                     </Badge>
                     <h3 className="text-xl font-bold text-white">2 for 1 Wednesdays</h3>
-                    <p className="text-white/70">Buy one adult ticket, get one free!</p>
+                    <p className="text-white/70">Two admissions for the standard adult rate.</p>
                   </div>
                 </div>
                 <div className="text-center md:text-right">
                   <div className="flex items-baseline justify-center gap-1 md:justify-end">
-                    <span className="text-3xl font-black text-green-400">$25</span>
-                    <span className="text-lg text-white/60">EC</span>
+                    <span className="text-3xl font-black text-green-400">$20 EC</span>
                   </div>
                   <p className="text-sm text-white/50">Every Wednesday</p>
                 </div>
@@ -159,7 +155,7 @@ export function PricingSection() {
                   <p className="text-sm text-white/55">Add-on per ticket</p>
                 </div>
               </div>
-              <p className="text-xl font-black text-[#F7B500]">$10.00</p>
+              <p className="text-xl font-black text-[#F7B500]">$10 EC</p>
             </CardContent>
           </Card>
         </motion.div>

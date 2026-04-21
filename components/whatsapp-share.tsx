@@ -14,7 +14,7 @@ export function WhatsAppShare() {
     `🕓 Open 4:00 PM - Late (Closed Mondays)\n\n` +
     `💰 Super Saver Tuesdays - $15 EC!\n` +
     `🎟️ Regular: Adults $25 EC / Kids $15 EC\n\n` +
-    `Check out what's playing and book your tickets!`
+    `Check out what's playing this week!`
   )
 
   const whatsappUrl = `https://wa.me/?text=${shareMessage}`

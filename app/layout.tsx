@@ -11,7 +11,7 @@ const inter = Inter({
 
 export const metadata: Metadata = {
   title: 'Movie Palace Grenada | Excel Plaza, Grand Anse',
-  description: 'Experience cinema magic at Movie Palace Grenada. Located at Excel Plaza, Grand Anse. Check showtimes, book tickets, and enjoy the latest blockbusters!',
+  description: 'Experience cinema magic at Movie Palace Grenada. Located at Excel Plaza, Grand Anse. Check showtimes and enjoy the latest blockbusters.',
   generator: 'v0.app',
   keywords: ['cinema', 'movies', 'Grenada', 'Excel Plaza', 'Grand Anse', 'movie tickets', 'showtimes'],
   icons: {

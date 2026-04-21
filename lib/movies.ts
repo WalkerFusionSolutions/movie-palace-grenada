@@ -1,4 +1,6 @@
 /** Row shape for `public.movies` (Supabase). */
+import { toYouTubeEmbedUrl } from '@/lib/youtube'
+
 export interface Movie {
   id: string
   title: string | null
@@ -57,7 +59,7 @@ export function normalizeMovieRow(m: Record<string, unknown>): Movie {
     title: (m.title as string) ?? null,
     description: (m.description as string) ?? null,
     poster_url: (m.poster_url as string) ?? null,
-    trailer_url: (m.trailer_url as string) ?? null,
+    trailer_url: toYouTubeEmbedUrl((m.trailer_url as string) ?? null) || null,
     is_now_playing: Boolean(m.is_now_playing),
     is_coming_soon: Boolean(m.is_coming_soon),
     rating: (m.rating as string) ?? null,

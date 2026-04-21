@@ -467,13 +467,14 @@ export function AdminDashboard({ initialMovies }: AdminDashboardProps) {
             </div>
             <div className="space-y-2">
               <Label htmlFor="showtime_display">Showtime display</Label>
-              <Input
+              <textarea
                 id="showtime_display"
                 value={form.showtime_display}
                 onChange={(e) =>
                   setForm((f) => ({ ...f, showtime_display: e.target.value }))
                 }
-                className="border-white/15 bg-black/40 text-white"
+                rows={4}
+                className="w-full rounded-lg border border-white/15 bg-black/40 px-3 py-2 text-sm text-white placeholder:text-white/35 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#E50914]/50"
                 placeholder="16 Apr - 22 Apr, 4:30 PM"
               />
             </div>

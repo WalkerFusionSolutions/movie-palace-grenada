@@ -36,16 +36,16 @@ export function Header() {
             : 'bg-gradient-to-b from-black/60 to-transparent'
         }`}
       >
-        <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 md:h-20 md:px-8">
+        <div className="mx-auto flex h-24 max-w-7xl items-center justify-between px-4 md:h-28 md:px-8">
           {/* Logo */}
           <Link href="/" className="flex items-center gap-3">
             <Image
               src="/logo.png"
               alt="Movie Palace Grenada"
-              width={180}
-              height={60}
+              width={540}
+              height={180}
               priority
-              className="h-10 w-auto object-contain md:h-12"
+              className="h-16 w-auto object-contain md:h-20"
             />
           </Link>
 
