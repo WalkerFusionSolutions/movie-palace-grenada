@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from 'next'
 import { Inter } from 'next/font/google'
 import { Analytics } from '@vercel/analytics/next'
+import { SpeedInsights } from '@vercel/speed-insights/next'
 import { Toaster } from 'sonner'
 import './globals.css'
 
@@ -51,6 +52,7 @@ export default function RootLayout({
         {children}
         <Toaster richColors position="top-center" theme="dark" />
         {process.env.NODE_ENV === 'production' && <Analytics />}
+        <SpeedInsights />
       </body>
     </html>
   )
